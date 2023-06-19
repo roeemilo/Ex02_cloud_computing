@@ -194,9 +194,9 @@ def enqueueWork():
     iter = request.args.get('iterations')
     buffer = request.data
     workNum = 1 + workNum
-    id = f"{id(workNum)}"
-    Manager.enqueueWork(buffer, iter, id)
-    res = Response(response=json.dumps({'WorkID': id}), status=200, mimetype='application/json')
+    uWorkID = f"{id(workNum)}"
+    Manager.enqueueWork(buffer, iter, uWorkID)
+    res = Response(response=json.dumps({'WorkID': uWorkID}), status=200, mimetype='application/json')
     return res
 
 @app.route('/pullCompleted', methods=["POST"])
