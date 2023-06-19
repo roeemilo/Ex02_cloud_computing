@@ -8,10 +8,22 @@ set -o pipefail
 sudo apt-get update && sudo apt-get install -y jq
 
 worker_role_name="ec2-instance-create-role-worker"
-aws iam create-role --role-name $worker_role_name --assume-role-policy-document '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"ec2.amazonaws.com"},"Action":"sts:AssumeRole"}]}'
-aws iam attach-role-policy --role-name $worker_role_name --policy-arn arn:aws:iam::aws:policy/AmazonEC2FullAccess
-aws iam create-instance-profile --instance-profile-name $worker_role_name
-aws iam add-role-to-instance-profile --role-name $worker_role_name --instance-profile-name $worker_role_name
+
+####
+if aws iam get-role --role-name $worker_role_name >/dev/null 2>&1; then
+    echo "Role $worker_role_name already exists. Using the existing role."
+else
+    echo "Role $worker_role_name does not exist. Creating the role..."
+
+    # Create the IAM role and attach necessary policies
+    aws iam create-role --role-name $worker_role_name --assume-role-policy-document '{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"ec2.amazonaws.com"},"Action":"sts:AssumeRole"}]}'
+    aws iam attach-role-policy --role-name $worker_role_name --policy-arn arn:aws:iam::aws:policy/AmazonEC2FullAccess
+    aws iam create-instance-profile --instance-profile-name $worker_role_name
+    aws iam add-role-to-instance-profile --role-name $worker_role_name --instance-profile-name $worker_role_name
+
+    echo "Role $worker_role_name created successfully."
+fi
+####
 
 # Create new key pair
 current_key="cloud-course-$(date +'%N')"
