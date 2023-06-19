@@ -63,8 +63,8 @@ ssh -i $key_file -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu
     sudo apt install python3-pip --yes
     sudo pip3 install flask
 
-    export instance_id=$instance_id
-    export primary_ip=$my_ip
+    export instanceID=$instance_id
+    export primaryIP=$my_ip
 
     curl "https://d1vvhvl2y92vvt.cloudfront.net/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
     unzip awscliv2.zip

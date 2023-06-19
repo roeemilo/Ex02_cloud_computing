@@ -194,15 +194,15 @@ def enqueueWork():
     iter = request.args.get('iterations')
     buffer = request.data
     workNum = 1 + workNum
-    id = f"{localIP}.{workNum}"
+    id = f"{id(workNum)}"
     Manager.enqueueWork(buffer, iter, id)
     res = Response(response=json.dumps({'WorkID': id}), status=200, mimetype='application/json')
     return res
 
 @app.route('/pullCompleted', methods=["POST"])
 def pullCompleted():
-    pick = int(request.args.get('pick'))
-    result = Manager.pullComplete(pick)
+    top = int(request.args.get('top'))
+    result = Manager.pullComplete(top)
     json_data = jsonify(result)
     res = Response(response=json_data.data, status=200, mimetype='application/json')
     return res
