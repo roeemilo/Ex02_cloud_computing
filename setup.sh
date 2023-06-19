@@ -90,9 +90,11 @@ for ((i=0; i<2; i++)); do
     scp -i "${keys[$i]}" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=60" workerSetup.sh ubuntu@"${ips[$i]}":/home/ubuntu/
 
     ssh -i "${keys[$i]}" -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu@"${ips[$i]}" <<EOF
-    export localIP=$local_ip
-    export otherIP=$other_ip
-    export maxWorkers=$max_workers
+
+    echo "localIP=$local_ip" > variables.txt
+    echo "otherIP=$other_ip" >> variables.txt
+    echo "maxWorkers=$max_workers" >> variables.txt
+
     sudo apt update 
     sudo apt-get install unzip
     sudo apt install python3-pip --yes

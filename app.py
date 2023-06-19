@@ -148,9 +148,18 @@ class EndpointNode:
 
 app = Flask(__name__)
 
-localIP = os.environ.get('localIP')
-maxWorkers = int(os.environ.get('maxWorkers'))
-otherIP = os.environ.get('otherIP')
+variables = {}
+with open("variables.txt", "r") as file:
+    for line in file:
+        key, value = line.strip().split("=")
+        variables[key] = value
+
+
+
+localIP = variables['localIP']
+maxWorkers = variables['maxWorkers']
+otherIP = variables['otherIP']
+
 workpick = 100
 workNum = 0
 workID = ''

@@ -17,9 +17,8 @@ class Worker:
     LastManager = None
     instanceID = None
 
-    def __init__(self, id, FirstManager, SecondManager):
+    def __init__(self, id, FirstManager):
         self.FirstManager = FirstManager
-        self.SecondManager = SecondManager
         self.instanceID = id
 
     def do_work(self,buffer, iter_num):
@@ -73,10 +72,17 @@ class Worker:
 
 app = Flask(__name__)
 
-instanceID = os.environ.get('instanceID')
-primaryIP = os.environ.get('primaryIP')
-secondaryIP = os.environ.get('secondaryIP')
-worker = Worker(instanceID, primaryIP, secondaryIP)
+variables = {}
+with open("workerVariables.txt", "r") as file:
+    for line in file:
+        key, value = line.strip().split("=")
+        variables[key] = value
+
+instanceID = variables['instanceID']
+primaryIP = variables['primaryIP']
+secondaryIP = None
+
+worker = Worker(instanceID, primaryIP)
 def workerLoop():
     worker.loop()
     
