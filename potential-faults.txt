@@ -1,0 +1,6 @@
+1. Handling Blocking of Heavy Jobs:
+Issue: When workers pull heavy jobs and the maximum number of workers is reached, the queue can continue to fill up without any available worker to process them.
+Solution: Enhance worker functionality to allow each worker to handle multiple jobs and allocate equal time to each job. For example, workers can switch to work on another job every 60 seconds, ensuring a fair distribution of workload.
+2. Managing Heavy Request Load on Servers:
+Issue: With only two EC2 instances, the servers can become overwhelmed when facing a large number of requests.
+Solution: To address this, we can focus on two approaches. Firstly, ensure that requests are distributed evenly among the available servers, preventing overload on any particular instance. Secondly, consider scaling up the infrastructure by adding more EC2 instances to handle the increased request load effectively. By dynamically adjusting the number of EC2 instances based on the workload, the system can maintain optimal performance and prevent bottlenecks.

@@ -157,7 +157,7 @@ with open("variables.txt", "r") as file:
 
 
 localIP = variables['localIP']
-maxWorkers = variables['maxWorkers']
+maxWorkers = int(variables['maxWorkers'])
 otherIP = variables['otherIP']
 
 workpick = 100
