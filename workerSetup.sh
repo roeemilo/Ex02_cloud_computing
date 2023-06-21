@@ -71,6 +71,6 @@ ssh -i $key_file -o "StrictHostKeyChecking=no" -o "ConnectionAttempts=10" ubuntu
     sudo ./aws/install
 
     # Run the app
-    nohup /usr/local/bin/flask run --host 0.0.0.0 > flask_output.log 2>&1 &
+    nohup /usr/local/bin/flask run --host 0.0.0.0 &>/dev/null &
     exit
 EOF

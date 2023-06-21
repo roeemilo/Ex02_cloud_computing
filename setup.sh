@@ -104,7 +104,7 @@ for ((i=0; i<2; i++)); do
     unzip awscliv2.zip
     sudo ./aws/install
 
-    nohup /usr/local/bin/flask run --host 0.0.0.0 > flask_output.log 2>&1 &
+    nohup /usr/local/bin/flask run --host 0.0.0.0 &>/dev/null &
     echo "running"
     exit
 EOF
