@@ -16,46 +16,42 @@ class EndpointNode:
     numOfWorkers = 0
     startIP = None
     endIP = None
-    otherIP = None
+    secondaryIP = None
     workData = []
     workComplete = []
 
 
-    def __init__(self, begin, endIP, otherIP) -> None:
+    def __init__(self, begin, endIP, secondaryIP) -> None:
         self.maxNumWork = begin
         self.minNumWork = begin
         self.endIP = endIP
-        self.startIP = otherIP
-        self.otherIP = otherIP
+        self.startIP = secondaryIP
+        self.secondaryIP = secondaryIP
 
-        if otherIP:
-            try:
-                url = f'http://{self.otherIP}:5000/OtherIPupdate?otherIP={self.endIP}'
-                query1 = ""
-                response = requests.get(url)
-            except requests.exceptions.RequestException as error:
-                self.otherIP = None
 
     def pullComplete(self, pick):
         if pick is None:
             return []
         else:
-            scode = 200
             results = self.retrieveWorkItems(pick)
             if len(results) >= pick and pick is not None:
                 return results
-            if self.otherIP:
+            
+            if self.secondaryIP:
                 try:
-                    curr = pick - len(results)
-                    url = f'http://{self.otherIP}:5000/retrieveWorkItems?pick={curr}'
+                    url = f'http://{self.secondaryIP}:5000/secondaryIPupdate?secondaryIP={self.endIP}'
+                    query1 = ""
                     response = requests.get(url)
-                    if response.status_code == scode:
-                        other_results = response.json()
-                        res = results + other_results
-                        return res
+                    curr = pick - len(results)
+                    url = f'http://{self.secondaryIP}:5000/retrieveWorkItems?pick={curr}'
+                    response = requests.get(url)
+                    other_results = response.json()
+                    res = results + other_results
+                    return res
                 except requests.exceptions.RequestException as error:
-                    self.otherIP = None
+                    self.secondaryIP = None
                     self.startIP = None
+
             return results
 
     def retrieveWorkItems(self,pick):
@@ -74,7 +70,6 @@ class EndpointNode:
             start = self.workData[0][2]
             d = (datetime.now() - start).total_seconds()
             min = 15
-            scode = 200
             query1 = ""
 
             if d > min:
@@ -82,19 +77,18 @@ class EndpointNode:
                 if self.numOfWorkers < self.maxNumWork and self.spawnWorker():
                     self.numOfWorkers += 1
                 else:
-                    if self.otherIP:
+                    if self.secondaryIP:
                         self.minNumWork -= 1
                         try:
-                            url1 = f'http://{self.otherIP}:5000/getNodeQuota'
+                            url1 = f'http://{self.secondaryIP}:5000/getNodeQuota'
                             response = requests.get(url1)
-                            if response.status_code == scode:
-                                result = response.json()['result']
-                                res_copy = result
-                                if res_copy == "True":
-                                    url2 = f'http://{self.otherIP}:5000/spawnWorker'
-                                    response = requests.get(url2)
+                            result = response.json()['result']
+                            res_copy = result
+                            if res_copy == "True":
+                                url2 = f'http://{self.secondaryIP}:5000/spawnWorker'
+                                response = requests.get(url2)
                         except requests.exceptions.RequestException as error:
-                            self.otherIP = None
+                            self.secondaryIP = None
                             self.startIP = None
 
 
@@ -129,7 +123,7 @@ class EndpointNode:
         self.numOfWorkers -= 1
 
     def updateTheManager(self, ip):
-        self.otherIP = ip
+        self.secondaryIP = ip
 
     def spawnWorker(self):
         instanceID = None
@@ -158,12 +152,12 @@ with open("variables.txt", "r") as file:
 
 localIP = variables['localIP']
 maxWorkers = int(variables['maxWorkers'])
-otherIP = variables['otherIP']
+secondaryIP = variables['secondaryIP']
 
 workpick = 100
 workNum = 0
 workID = ''
-Manager = EndpointNode(maxWorkers, localIP, otherIP)
+Manager = EndpointNode(maxWorkers, localIP, secondaryIP)
 
 
 ##Manager_Manager
@@ -178,11 +172,11 @@ def getNodeQouta():
     res = Response(response=json.dumps({'result': Manager.TryGetNodeQuota()}), status=200, mimetype='application/json')
     return res
 
-@app.route('/OtherIPupdate', methods=["GET"])
-def OtherIPupdate():
+@app.route('/secondaryIPupdate', methods=["GET"])
+def secondaryIPupdate():
     working = "OK"
-    otherIP = request.args.get('otherIP')
-    Manager.updateTheManager(otherIP)
+    secondaryIP = request.args.get('secondaryIP')
+    Manager.updateTheManager(secondaryIP)
     return working
 
 @app.route('/retrieveWorkItems', methods=["GET"])
@@ -242,9 +236,9 @@ def workerDone():
     return res
 
 
-@app.route('/getOtherIP', methods=["GET"])
-def getOtherIP():
-    res = Response(response=json.dumps({'otherIP': Manager.otherIP}), status=200, mimetype='application/json')
+@app.route('/getSecondaryIP', methods=["GET"])
+def getSecondaryIP():
+    res = Response(response=json.dumps({'secondaryIP': Manager.secondaryIP}), status=200, mimetype='application/json')
     return res
 
 
