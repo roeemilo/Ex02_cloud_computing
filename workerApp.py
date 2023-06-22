@@ -52,8 +52,7 @@ class Worker:
     ##checks for work from two IP addresses and performs the work if available, notifying the completion
     def loop(self):
         max = 240
-        scode = 200
-        timeToSleep = 60
+        timeToSleep = 80
         lastTime = datetime.now()
         d = 0
         while d <= max:
@@ -95,16 +94,13 @@ timer_thread.start()
 
 def run_process():
     scode = 200
-    time_to_sleep = 60
 
-    while True:
-        if worker.FirstManager:
-            runWorker(scode, True)
+    if worker.FirstManager:
+        runWorker(scode, True)
 
-        if worker.SecondManager:
-            runWorker(scode, False)
+    if worker.SecondManager:
+        runWorker(scode, False)
 
-        time.sleep(time_to_sleep)
 
 
 def runWorker(scode,isFirst):
@@ -120,6 +116,4 @@ def runWorker(scode,isFirst):
         worker.update_IP(None, isFirst)
 
 
-timer_thread = threading.Thread(target=run_process)
-timer_thread.daemon = True
-timer_thread.start()
+run_process
